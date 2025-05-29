@@ -1,0 +1,26 @@
+{
+    "name": "jfban-devcontainer",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "runArgs": [
+        "--gpus=all"
+    ],
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+        "source=${localEnv:USERPROFILE}/Desktop/jfban_input,target=/mnt/jfban_input,type=bind",
+        "source=${localEnv:USERPROFILE}/Desktop/jfban_output,target=/mnt/jfban_output,type=bind"
+    ],
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    }
+}

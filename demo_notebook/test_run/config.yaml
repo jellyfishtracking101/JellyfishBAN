@@ -1,0 +1,73 @@
+dataset:
+  fixed_image_shape:
+  - 1024
+  - 1024
+  - 3
+  fixed_label_shape:
+  - 30
+  - 3
+  moving_image_shape:
+  - 1024
+  - 1024
+  - 3
+  moving_label_shape:
+  - 30
+  - 3
+  test:
+    dir:
+    - /workspace/test_h5_files
+    format: h5
+    labeled: false
+  train:
+    dir:
+    - /workspace/test_h5_files/cropped/padded/train
+    format: h5
+    labeled: true
+  type: paired
+  valid:
+    dir:
+    - /workspace/test_h5_files/cropped/padded/val
+    format: h5
+    labeled: true
+    sample_label: all
+train:
+  backbone:
+    extract_levels:
+    - 0
+    - 1
+    - 2
+    - 3
+    name: local
+    num_channel_initial: 16
+  epochs: 1000
+  loss:
+    image:
+      kernel_size: 16
+      name: lncc
+      weight: 1
+    label:
+      name: centroid
+      weight: 0.1
+    regularization:
+      hybrid: true
+      hybrid_weight:
+        axisdiff: 0.001
+        diff: 0.005
+        gradient: 0.0
+        nonrigid: 0.0
+      img_size:
+      - 1024
+      - 1024
+      - 3
+      name: hybrid
+      weight: 1
+  method: ddf
+  optimizer:
+    learning_rate: 0.5
+    name: Adam
+  preprocess:
+    batch_size: 2
+    data_augmentation: null
+    shuffle_buffer_num_batch: 4
+  save_period: 1
+  single_channel: true

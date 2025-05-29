@@ -1,0 +1,75 @@
+dataset:
+  fixed_image_shape:
+  - 1080
+  - 1080
+  - 3
+  fixed_label_shape:
+  - 30
+  - 3
+  moving_image_shape:
+  - 1080
+  - 1080
+  - 3
+  moving_label_shape:
+  - 30
+  - 3
+  test:
+    dir:
+    - /home/brian/data4/brian/PBnJ/archive_pre_datadump/jelly_processed_data/mixed_lab_D_padded/val
+    format: h5
+    labeled: false
+  train:
+    dir:
+    - /home/brian/data4/brian/PBnJ/archive_pre_datadump/jelly_processed_data/mixed_lab_D_padded/train
+    format: h5
+    labeled: true
+  type: paired
+  valid:
+    dir:
+    - /home/brian/data4/brian/PBnJ/archive_pre_datadump/jelly_processed_data/mixed_lab_D_padded/val
+    format: h5
+    labeled: true
+    sample_label: all
+train:
+  backbone:
+    extract_levels:
+    - 0
+    - 1
+    - 2
+    - 3
+    name: local
+    num_channel_initial: 16
+  epochs: 1000
+  loss:
+    image:
+      kernel_size: 16
+      name: lncc
+      weight: 100
+    label:
+      name: centroid
+      weight: 1
+    regularization:
+      hybrid: true
+      hybrid_weight:
+        axisdiff: 1000
+        diff: 0.0005
+        # gradient_weight_map: false
+        gradient_weight_map: true
+        gradient: 0.05
+        nonrigid: 0.02
+      img_size:
+      - 1080
+      - 1080
+      - 3
+      name: hybrid
+      weight: 1
+  method: ddf
+  optimizer:
+    learning_rate: 0.005
+    name: Adam
+  preprocess:
+    batch_size: 4
+    data_augmentation: null
+    shuffle_buffer_num_batch: 4
+  save_period: 1
+  single_channel: true
