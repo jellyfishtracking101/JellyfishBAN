@@ -29,7 +29,8 @@ RUN conda run -n JFBAN conda install -c conda-forge graphviz -y && \
 SHELL ["conda", "run", "--no-capture-output", "-n", "JFBAN", "/bin/bash", "-c"]
 
 # Install package directly from GitHub
-RUN pip install git+https://github.com/jellyfishtracking101/JF_Deepreg.git
+RUN pip install git+https://github.com/jellyfishtracking101/JF_Deepreg.git && \
+    pip install git+https://github.com/flavell-lab/euler_gpu.git
 
 # Set environment active by default
 ENV PATH="/opt/conda/envs/<ENV_NAME>/bin:$PATH"

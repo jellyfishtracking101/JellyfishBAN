@@ -9,8 +9,7 @@
     ],
     "mounts": [
         "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-        "source=${localEnv:USERPROFILE}/Desktop/jfban_input,target=/mnt/jfban_input,type=bind",
-        "source=${localEnv:USERPROFILE}/Desktop/jfban_output,target=/mnt/jfban_output,type=bind"
+        "source=${localEnv:USERPROFILE}/Desktop/jfban_input,target=/input,type=bind"
     ],
     "workspaceFolder": "/workspace",
     "customizations": {
