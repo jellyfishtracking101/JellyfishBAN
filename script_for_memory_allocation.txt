@@ -1,0 +1,95 @@
+# Set the path to the .wslconfig file in the user's profile
+$wslConfigPath = "$HOME\.wslconfig"
+
+# Desired configuration values
+$desiredMemory = "50GB"
+$desiredSwap   = "8GB"
+
+# If the .wslconfig file does not exist, create it with the [wsl2] section
+if (!(Test-Path $wslConfigPath)) {
+    # Create a new .wslconfig with the desired memory and swap settings
+    @" 
+[wsl2]
+memory=$desiredMemory
+swap=$desiredSwap
+"@ | Set-Content -Path $wslConfigPath -Encoding UTF8
+
+} else {
+    # .wslconfig exists – read all lines
+    $lines = Get-Content $wslConfigPath
+    $newLines = @()
+    $inWsl2Section = $false
+    $wsl2Found = $false
+    $memorySet = $false
+    $swapSet = $false
+
+    foreach ($line in $lines) {
+        # Check if this line is the start of the [wsl2] section
+        if ($line.Trim() -ieq "[wsl2]") {
+            $wsl2Found = $true
+            $inWsl2Section = $true
+            $newLines += $line    # keep the [wsl2] header
+            continue
+        }
+
+        if ($inWsl2Section) {
+            # If we hit a new section (another [Section]) or end of file, handle insertion later
+            if ($line.Trim().StartsWith("[")) {
+                # We encountered another section, so end of [wsl2] section
+                if (-not $memorySet) {
+                    $newLines += "memory=$desiredMemory"
+                    $memorySet = $true
+                }
+                if (-not $swapSet) {
+                    $newLines += "swap=$desiredSwap"
+                    $swapSet = $true
+                }
+                $inWsl2Section = $false
+                # Process this new section line (don't skip it)
+                $newLines += $line
+                continue
+            }
+
+            # Still within [wsl2] section – check for memory or swap lines
+            if ($line.Trim().ToLower().StartsWith("memory=")) {
+                # Overwrite any existing memory setting
+                $newLines += "memory=$desiredMemory"
+                $memorySet = $true
+            }
+            elseif ($line.Trim().ToLower().StartsWith("swap=")) {
+                # Overwrite any existing swap setting
+                $newLines += "swap=$desiredSwap"
+                $swapSet = $true
+            }
+            else {
+                # Keep any other lines (e.g. processors, kernel, etc.) in [wsl2] section
+                $newLines += $line
+            }
+            continue
+        }
+
+        # Outside of [wsl2] section – just preserve the line
+        $newLines += $line
+    }
+
+    # If the file ended while still in the [wsl2] section, append missing settings
+    if ($inWsl2Section) {
+        if (-not $memorySet) {
+            $newLines += "memory=$desiredMemory"
+        }
+        if (-not $swapSet) {
+            $newLines += "swap=$desiredSwap"
+        }
+    }
+    # If no [wsl2] section was found at all, add it at the end with desired settings
+    if (-not $wsl2Found) {
+        $newLines += "[wsl2]"
+        $newLines += "memory=$desiredMemory"
+        $newLines += "swap=$desiredSwap"
+    }
+
+    # Write the updated lines back to the .wslconfig file
+    Set-Content -Path $wslConfigPath -Value $newLines -Encoding UTF8
+}
+
+# Note: WSL shutdown has been removed per request. Restart WSL manually to apply changes when ready.
